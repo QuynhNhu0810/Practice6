@@ -87,3 +87,48 @@ from Customer
 group by customer_id
 having count(distinct product_key) in (select count(*) from Product)
 --ex9
+select employee_id
+from Employees
+where salary < 30000 
+and manager_id not in (select employee_id
+from Employees)
+order by employee_id
+--ex10
+select employee_id, department_id
+from Employee
+where employee_id in (select employee_id
+from Employee
+group by employee_id
+having count(department_id) =1)
+or primary_flag = 'Y'
+--ex11
+select user_name as results
+from (select u.name as user_name, count(u.user_id)
+from Users as u
+join MovieRating as m on u.user_id = m.user_id
+group by u.name
+order by count(u.user_id) desc,u.name
+limit 1 ) result1
+union all 
+select movie_title as results
+from (select mv.title as movie_title, avg(m.rating)
+from Movies as mv
+join MovieRating as m on mv.movie_id  = m.movie_id 
+where month(m.created_at) = 02 and year(m.created_at) = 2020
+group by mv.title
+order by avg(m.rating) desc ,mv.title  
+limit 1) result2
+-ex12
+select id , count(id) as num
+from (
+select requester_id as id from requestaccepted
+union all
+select accepter_id from requestaccepted
+)s
+group by id
+order by count(id) desc limit 1
+
+
+
+
+
